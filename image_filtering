@@ -1,0 +1,72 @@
+# STEP 1: Upload Image
+from google.colab import files
+uploaded = files.upload()
+
+# STEP 2: Import Libraries
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import os
+
+# STEP 3: Check Uploaded Files
+print("Uploaded files:", os.listdir())
+
+# STEP 4: Get Image Name (Automatically)
+image_name = list(uploaded.keys())[0]
+print("Using image:", image_name)
+
+# STEP 5: Read Image
+image = cv2.imread(image_name)
+
+# Validate Image Loading
+if image is None:
+    raise ValueError("❌ Image not loaded. Please upload a valid image file.")
+
+print("✅ Image loaded successfully")
+
+# STEP 6: Convert BGR to RGB
+image_rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+# STEP 7: Apply Filters
+
+# Gaussian Blur
+gaussian_blur = cv2.GaussianBlur(image_rgb, (5, 5), 0)
+
+# Median Filter
+median_filter = cv2.medianBlur(image_rgb, 5)
+
+# Smoothing (Averaging)
+kernel = np.ones((5, 5), np.float32) / 25
+smoothed_image = cv2.filter2D(image_rgb, -1, kernel)
+
+# STEP 8: Display Results
+titles = [
+    "Original Image",
+    "Gaussian Blur",
+    "Median Filter",
+    "Smoothed Image"
+]
+
+images = [
+    image_rgb,
+    gaussian_blur,
+    median_filter,
+    smoothed_image
+]
+
+plt.figure(figsize=(10, 8))
+for i in range(len(images)):
+    plt.subplot(2, 2, i + 1)
+    plt.imshow(images[i])
+    plt.title(titles[i])
+    plt.axis("off")
+
+plt.tight_layout()
+plt.show()
+
+# STEP 9: Save Output Images
+cv2.imwrite("gaussian_blur.png", cv2.cvtColor(gaussian_blur, cv2.COLOR_RGB2BGR))
+cv2.imwrite("median_filter.png", cv2.cvtColor(median_filter, cv2.COLOR_RGB2BGR))
+cv2.imwrite("smoothed_image.png", cv2.cvtColor(smoothed_image, cv2.COLOR_RGB2BGR))
+
+print("✅ Output images saved successfully")
